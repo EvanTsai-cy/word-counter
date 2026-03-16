@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>字數計算器</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, "Noto Sans TC", sans-serif;
+      background: #f5f7fb;
+      color: #222;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 60px auto;
+      padding: 24px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 28px;
+    }
+
+    p {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      padding: 16px;
+      font-size: 16px;
+      line-height: 1.6;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      resize: vertical;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: #666;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .stat-box {
+      background: #f8f9fc;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 12px;
+    }
+
+    button {
+      border: none;
+      background: #222;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    @media (max-width: 640px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>字數計算器</h1>
+      <p>貼上或輸入文字，即時計算字數、單字數與行數。</p>
+
+      <textarea id="textInput" placeholder="請輸入文字..."></textarea>
+
+      <div class="stats">
+        <div class="stat-box">
+          <div class="stat-label">字數</div>
+          <div class="stat-value" id="charCount">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">單字數</div>
+          <div class="stat-value" id="wordCount">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">行數</div>
+          <div class="stat-value" id="lineCount">0</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="clearBtn">清空文字</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const textInput = document.getElementById("textInput");
+    const charCount = document.getElementById("charCount");
+    const wordCount = document.getElementById("wordCount");
+    const lineCount = document.getElementById("lineCount");
+    const clearBtn = document.getElementById("clearBtn");
+
+    function updateCounts() {
+      const text = textInput.value;
+
+      // 字數：包含空白與換行
+      charCount.textContent = text.length;
+
+      // 單字數：以空白切開，過濾空字串
+      const words = text.trim() === "" ? [] : text.trim().split(/\s+/);
+      wordCount.textContent = words.length;
+
+      // 行數：空字串時顯示 0
+      const lines = text === "" ? 0 : text.split("\n").length;
+      lineCount.textContent = lines;
+    }
+
+    textInput.addEventListener("input", updateCounts);
+
+    clearBtn.addEventListener("click", () => {
+      textInput.value = "";
+      updateCounts();
+      textInput.focus();
+    });
+
+    updateCounts();
+  </script>
+</body>
+</html>
