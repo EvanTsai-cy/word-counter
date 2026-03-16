@@ -1,326 +1,45 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>字數計算器 | Word Counter</title>
-  <meta
-    name="description"
-    content="簡潔好用的字數計算器，支援總字元數、不含空白字元、英文單字、中文字數與行數統計。"
-  />
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    :root {
-      --bg: #f5f5f7;
-      --surface: rgba(255, 255, 255, 0.82);
-      --surface-strong: #ffffff;
-      --text: #111111;
-      --text-soft: #6b7280;
-      --border: rgba(17, 17, 17, 0.08);
-      --stat-bg: #f3f4f6;
-      --button-bg: #111111;
-      --button-text: #ffffff;
-      --button-secondary-bg: #eceef2;
-      --button-secondary-text: #111111;
-      --textarea-bg: #ffffff;
-      --shadow: 0 18px 50px rgba(17, 17, 17, 0.08);
-      --ring: rgba(17, 17, 17, 0.14);
-    }
-
-    body.dark {
-      --bg: #0b0c0f;
-      --surface: rgba(20, 22, 28, 0.84);
-      --surface-strong: #151821;
-      --text: #f5f7fa;
-      --text-soft: #9aa3b2;
-      --border: rgba(255, 255, 255, 0.08);
-      --stat-bg: #1b1f29;
-      --button-bg: #f5f7fa;
-      --button-text: #0b0c0f;
-      --button-secondary-bg: #202531;
-      --button-secondary-text: #f5f7fa;
-      --textarea-bg: #10131a;
-      --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
-      --ring: rgba(255, 255, 255, 0.12);
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-      padding: 40px 20px;
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "SF Pro Display",
-        "SF Pro Text",
-        "Noto Sans TC",
-        "PingFang TC",
-        "Microsoft JhengHei",
-        sans-serif;
-      background:
-        radial-gradient(circle at top, rgba(255, 255, 255, 0.65), transparent 35%),
-        var(--bg);
-      color: var(--text);
-      transition: background 0.25s ease, color 0.25s ease;
-    }
-
-    body.dark {
-      background:
-        radial-gradient(circle at top, rgba(255, 255, 255, 0.04), transparent 35%),
-        var(--bg);
-    }
-
-    .container {
-      max-width: 920px;
-      margin: 0 auto;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      padding: 28px;
-      transition:
-        background 0.25s ease,
-        border-color 0.25s ease,
-        box-shadow 0.25s ease;
-    }
-
-    .header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-
-    .title-group {
-      max-width: 620px;
-    }
-
-    h1 {
-      margin: 0 0 10px;
-      font-size: clamp(2rem, 4vw, 2.8rem);
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-      font-weight: 700;
-    }
-
-    .subtitle {
-      margin: 0;
-      font-size: 1rem;
-      line-height: 1.7;
-      color: var(--text-soft);
-    }
-
-    .theme-btn,
-    .primary-btn,
-    .secondary-btn {
-      border: none;
-      border-radius: 14px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition:
-        transform 0.15s ease,
-        opacity 0.2s ease,
-        background 0.25s ease,
-        color 0.25s ease;
-    }
-
-    .theme-btn:hover,
-    .primary-btn:hover,
-    .secondary-btn:hover {
-      opacity: 0.92;
-    }
-
-    .theme-btn:active,
-    .primary-btn:active,
-    .secondary-btn:active {
-      transform: translateY(1px);
-    }
-
-    .theme-btn {
-      flex-shrink: 0;
-      padding: 14px 18px;
-      background: var(--button-bg);
-      color: var(--button-text);
-    }
-
-    .input-wrap {
-      margin-top: 8px;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 280px;
-      padding: 20px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      background: var(--textarea-bg);
-      color: var(--text);
-      font: inherit;
-      font-size: 1rem;
-      line-height: 1.8;
-      resize: vertical;
-      outline: none;
-      transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        background 0.25s ease,
-        color 0.25s ease;
-    }
-
-    textarea::placeholder {
-      color: #9aa0aa;
-    }
-
-    textarea:focus {
-      border-color: var(--ring);
-      box-shadow: 0 0 0 4px var(--ring);
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 22px;
-    }
-
-    .stat-card {
-      min-height: 118px;
-      padding: 18px 14px;
-      border-radius: 20px;
-      background: var(--stat-bg);
-      border: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      transition:
-        background 0.25s ease,
-        border-color 0.25s ease;
-    }
-
-    .stat-label {
-      min-height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 8px;
-      color: var(--text-soft);
-      font-size: 0.88rem;
-      line-height: 1.45;
-    }
-
-    .stat-value {
-      font-size: 2rem;
-      font-weight: 700;
-      line-height: 1;
-      letter-spacing: -0.03em;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 22px;
-    }
-
-    .primary-btn,
-    .secondary-btn {
-      padding: 13px 18px;
-    }
-
-    .primary-btn {
-      background: var(--button-bg);
-      color: var(--button-text);
-    }
-
-    .secondary-btn {
-      background: var(--button-secondary-bg);
-      color: var(--button-secondary-text);
-    }
-
-    .footer-note {
-      margin-top: 18px;
-      font-size: 0.92rem;
-      line-height: 1.7;
-      color: var(--text-soft);
-    }
-
-    @media (max-width: 900px) {
-      .stats {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 640px) {
-      body {
-        padding: 20px 14px;
-      }
-
-      .card {
-        padding: 20px;
-        border-radius: 22px;
-      }
-
-      .header {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .theme-btn {
-        width: 100%;
-      }
-
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
-      textarea {
-        min-height: 220px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
   <main class="container">
+
     <section class="card">
+
       <div class="header">
-        <div class="title-group">
-          <h1>字數計算器</h1>
+
+        <div class="title-wrap">
+          <h1 class="title">字數計算器</h1>
+
           <p class="subtitle">
             輸入或貼上文字後，即時計算總字元數、不含空白字元、英文單字、中文字數與行數。
           </p>
         </div>
 
-        <button id="themeToggle" class="theme-btn" type="button">
+        <button id="themeToggle" class="theme-btn">
           切換深色模式
         </button>
+
       </div>
 
-      <div class="input-wrap">
-        <textarea
-          id="textInput"
-          placeholder="請輸入文字..."
-          aria-label="文字輸入區"
-        ></textarea>
-      </div>
+
+      <textarea
+        id="textInput"
+        class="text-area"
+        placeholder="請輸入文字..."
+      ></textarea>
+
 
       <div class="stats">
+
         <div class="stat-card">
           <div class="stat-label">總字元數（含空白）</div>
           <div class="stat-value" id="charCount">0</div>
@@ -345,105 +64,33 @@
           <div class="stat-label">行數</div>
           <div class="stat-value" id="lineCount">0</div>
         </div>
+
       </div>
+
 
       <div class="actions">
-        <button id="clearBtn" class="primary-btn" type="button">清空文字</button>
-        <button id="copyBtn" class="secondary-btn" type="button">複製文字</button>
+
+        <button id="clearBtn" class="primary-btn">
+          清空文字
+        </button>
+
+        <button id="copyBtn" class="secondary-btn">
+          複製文字
+        </button>
+
       </div>
 
+
       <p class="footer-note">
-        支援中英文混合內容的基本字數統計，適合用來快速檢查文章、作業、貼文與各類文字內容。
+        支援中英文混合內容的基本字數統計。
       </p>
+
     </section>
+
   </main>
 
-  <script>
-    const textInput = document.getElementById("textInput");
-    const charCount = document.getElementById("charCount");
-    const charNoSpaceCount = document.getElementById("charNoSpaceCount");
-    const englishWordCount = document.getElementById("englishWordCount");
-    const chineseCharCount = document.getElementById("chineseCharCount");
-    const lineCount = document.getElementById("lineCount");
-    const clearBtn = document.getElementById("clearBtn");
-    const copyBtn = document.getElementById("copyBtn");
-    const themeToggle = document.getElementById("themeToggle");
 
-    function countEnglishWords(text) {
-      const matches = text.match(/[A-Za-z]+(?:['’-][A-Za-z]+)*/g);
-      return matches ? matches.length : 0;
-    }
+  <script src="script.js"></script>
 
-    function countChineseChars(text) {
-      const matches = text.match(/[\u3400-\u4DBF\u4E00-\u9FFF]/g);
-      return matches ? matches.length : 0;
-    }
-
-    function countNonWhitespaceChars(text) {
-      return text.replace(/\s/g, "").length;
-    }
-
-    function countLines(text) {
-      if (text.length === 0) return 0;
-      return text.split(/\r?\n/).length;
-    }
-
-    function updateCounts() {
-      const text = textInput.value;
-
-      charCount.textContent = text.length;
-      charNoSpaceCount.textContent = countNonWhitespaceChars(text);
-      englishWordCount.textContent = countEnglishWords(text);
-      chineseCharCount.textContent = countChineseChars(text);
-      lineCount.textContent = countLines(text);
-    }
-
-    function setTheme(theme) {
-      if (theme === "dark") {
-        document.body.classList.add("dark");
-        themeToggle.textContent = "切換淺色模式";
-      } else {
-        document.body.classList.remove("dark");
-        themeToggle.textContent = "切換深色模式";
-      }
-
-      localStorage.setItem("theme", theme);
-    }
-
-    textInput.addEventListener("input", updateCounts);
-
-    clearBtn.addEventListener("click", () => {
-      textInput.value = "";
-      updateCounts();
-      textInput.focus();
-    });
-
-    copyBtn.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(textInput.value);
-        const originalText = copyBtn.textContent;
-        copyBtn.textContent = "已複製";
-        setTimeout(() => {
-          copyBtn.textContent = originalText;
-        }, 1200);
-      } catch (error) {
-        alert("複製失敗，請手動複製內容。");
-      }
-    });
-
-    themeToggle.addEventListener("click", () => {
-      const isDark = document.body.classList.contains("dark");
-      setTheme(isDark ? "light" : "dark");
-    });
-
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
-      setTheme("dark");
-    } else {
-      setTheme("light");
-    }
-
-    updateCounts();
-  </script>
 </body>
 </html>
