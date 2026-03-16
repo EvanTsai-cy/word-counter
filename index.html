@@ -9,100 +9,165 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --bg: #f5f7fb;
+      --card-bg: #ffffff;
+      --text: #222222;
+      --subtext: #666666;
+      --border: #dddddd;
+      --stat-bg: #f8f9fc;
+      --button-bg: #222222;
+      --button-text: #ffffff;
+      --textarea-bg: #ffffff;
+    }
+
+    body.dark {
+      --bg: #121417;
+      --card-bg: #1b1f24;
+      --text: #f3f4f6;
+      --subtext: #a1a1aa;
+      --border: #3a3f47;
+      --stat-bg: #252a31;
+      --button-bg: #f3f4f6;
+      --button-text: #121417;
+      --textarea-bg: #181c21;
+    }
+
     body {
       margin: 0;
       font-family: Arial, "Noto Sans TC", sans-serif;
-      background: #f5f7fb;
-      color: #222;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.2s, color 0.2s;
     }
 
     .container {
-      max-width: 720px;
-      margin: 60px auto;
+      max-width: 820px;
+      margin: 48px auto;
       padding: 24px;
     }
 
     .card {
-      background: white;
-      border-radius: 16px;
+      background: var(--card-bg);
+      border-radius: 18px;
       padding: 24px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      transition: background 0.2s;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
     }
 
     h1 {
-      margin-top: 0;
-      font-size: 28px;
+      margin: 0;
+      font-size: 30px;
     }
 
-    p {
-      color: #666;
-      margin-bottom: 20px;
+    .subtitle {
+      color: var(--subtext);
+      margin: 0 0 20px;
+      line-height: 1.6;
     }
 
     textarea {
       width: 100%;
-      min-height: 220px;
+      min-height: 260px;
       padding: 16px;
       font-size: 16px;
-      line-height: 1.6;
-      border: 1px solid #ddd;
+      line-height: 1.7;
+      border: 1px solid var(--border);
       border-radius: 12px;
       resize: vertical;
       outline: none;
+      background: var(--textarea-bg);
+      color: var(--text);
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
     }
 
     textarea:focus {
-      border-color: #666;
+      border-color: #888;
     }
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 12px;
       margin-top: 20px;
     }
 
     .stat-box {
-      background: #f8f9fc;
+      background: var(--stat-bg);
       border-radius: 12px;
-      padding: 16px;
+      padding: 16px 12px;
       text-align: center;
+      transition: background 0.2s;
     }
 
     .stat-label {
-      font-size: 14px;
-      color: #666;
+      font-size: 13px;
+      color: var(--subtext);
       margin-bottom: 8px;
+      line-height: 1.4;
     }
 
     .stat-value {
       font-size: 24px;
       font-weight: bold;
+      word-break: break-word;
     }
 
     .actions {
       margin-top: 20px;
       display: flex;
+      flex-wrap: wrap;
       gap: 12px;
     }
 
     button {
       border: none;
-      background: #222;
-      color: white;
+      background: var(--button-bg);
+      color: var(--button-text);
       padding: 12px 18px;
       border-radius: 10px;
       font-size: 15px;
       cursor: pointer;
+      transition: opacity 0.2s;
     }
 
     button:hover {
       opacity: 0.9;
     }
 
+    .note {
+      margin-top: 16px;
+      font-size: 14px;
+      color: var(--subtext);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 900px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
     @media (max-width: 640px) {
+      .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
       .stats {
         grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 26px;
       }
     }
   </style>
@@ -110,19 +175,33 @@
 <body>
   <div class="container">
     <div class="card">
-      <h1>字數計算器</h1>
-      <p>貼上或輸入文字，即時計算字數、單字數與行數。</p>
+      <div class="top-bar">
+        <h1>字數計算器</h1>
+        <button id="themeToggle">切換深夜模式</button>
+      </div>
+
+      <p class="subtitle">
+        輸入或貼上文字後，即時計算總字元、不含空白字元、英文單字、中文字數與行數。
+      </p>
 
       <textarea id="textInput" placeholder="請輸入文字..."></textarea>
 
       <div class="stats">
         <div class="stat-box">
-          <div class="stat-label">字數</div>
+          <div class="stat-label">總字元數<br>（含空白）</div>
           <div class="stat-value" id="charCount">0</div>
         </div>
         <div class="stat-box">
-          <div class="stat-label">單字數</div>
-          <div class="stat-value" id="wordCount">0</div>
+          <div class="stat-label">不含空白<br>字元數</div>
+          <div class="stat-value" id="charNoSpaceCount">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">英文單字數</div>
+          <div class="stat-value" id="englishWordCount">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">中文字數</div>
+          <div class="stat-value" id="chineseCharCount">0</div>
         </div>
         <div class="stat-box">
           <div class="stat-label">行數</div>
@@ -132,6 +211,11 @@
 
       <div class="actions">
         <button id="clearBtn">清空文字</button>
+        <button id="copyBtn">複製文字</button>
+      </div>
+
+      <div class="note">
+        提示：英文單字以空白與標點分隔；中文字數會統計常見中文字符。若老師有特殊計算規則，仍應以課堂規定為準。
       </div>
     </div>
   </div>
@@ -139,23 +223,50 @@
   <script>
     const textInput = document.getElementById("textInput");
     const charCount = document.getElementById("charCount");
-    const wordCount = document.getElementById("wordCount");
+    const charNoSpaceCount = document.getElementById("charNoSpaceCount");
+    const englishWordCount = document.getElementById("englishWordCount");
+    const chineseCharCount = document.getElementById("chineseCharCount");
     const lineCount = document.getElementById("lineCount");
     const clearBtn = document.getElementById("clearBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const themeToggle = document.getElementById("themeToggle");
+
+    function countEnglishWords(text) {
+      const matches = text.match(/[A-Za-z]+(?:['’-][A-Za-z]+)*/g);
+      return matches ? matches.length : 0;
+    }
+
+    function countChineseChars(text) {
+      const matches = text.match(/[\u4E00-\u9FFF\u3400-\u4DBF]/g);
+      return matches ? matches.length : 0;
+    }
+
+    function countNonWhitespaceChars(text) {
+      return text.replace(/\s/g, "").length;
+    }
+
+    function countLines(text) {
+      if (text.length === 0) return 0;
+      return text.split(/\r?\n/).length;
+    }
 
     function updateCounts() {
       const text = textInput.value;
 
-      // 字數：包含空白與換行
       charCount.textContent = text.length;
+      charNoSpaceCount.textContent = countNonWhitespaceChars(text);
+      englishWordCount.textContent = countEnglishWords(text);
+      chineseCharCount.textContent = countChineseChars(text);
+      lineCount.textContent = countLines(text);
+    }
 
-      // 單字數：以空白切開，過濾空字串
-      const words = text.trim() === "" ? [] : text.trim().split(/\s+/);
-      wordCount.textContent = words.length;
-
-      // 行數：空字串時顯示 0
-      const lines = text === "" ? 0 : text.split("\n").length;
-      lineCount.textContent = lines;
+    function setTheme(theme) {
+      if (theme === "dark") {
+        document.body.classList.add("dark");
+      } else {
+        document.body.classList.remove("dark");
+      }
+      localStorage.setItem("theme", theme);
     }
 
     textInput.addEventListener("input", updateCounts);
@@ -165,6 +276,28 @@
       updateCounts();
       textInput.focus();
     });
+
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(textInput.value);
+        copyBtn.textContent = "已複製";
+        setTimeout(() => {
+          copyBtn.textContent = "複製文字";
+        }, 1200);
+      } catch (error) {
+        alert("複製失敗，請手動複製。");
+      }
+    });
+
+    themeToggle.addEventListener("click", () => {
+      const isDark = document.body.classList.contains("dark");
+      setTheme(isDark ? "light" : "dark");
+    });
+
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      setTheme(savedTheme);
+    }
 
     updateCounts();
   </script>
